@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 
-import 'screens/home_screen.dart'; // 👈 HomeScreen import kiya
-
-void main() {
-  runApp(const TaskMateApp());
-}
+import 'screens/home_screen.dart';
 
 class TaskMateApp extends StatefulWidget {
-  const TaskMateApp({super.key});
+  // 👇 Yeh 2 lines miss ho gayi hain aapke code mein
+  final String appName;
+  final String apiUrl;
+
+  // 👇 Constructor update karna hai
+  const TaskMateApp({super.key, required this.appName, required this.apiUrl});
+
   @override
   State<TaskMateApp> createState() => _TaskMateAppState();
 }
@@ -24,7 +26,7 @@ class _TaskMateAppState extends State<TaskMateApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'TaskMate',
+      title: widget.appName, // 👈 Yahan widget.appName use kiya
       debugShowCheckedModeBanner: false,
       themeMode: _isDarkMode ? ThemeMode.dark : ThemeMode.light,
       theme: ThemeData(

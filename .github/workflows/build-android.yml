@@ -3,26 +3,22 @@ name: Build Android AAB
 on:
   push:
     branches: [main]
-  workflow_dispatch: # Manual run ke liye
+  workflow_dispatch:
+    inputs:
+      flavor:
+        description: "Select Flavor to Build"
+        required: true
+        default: "dev"
+        type: choice
+        options:
+          - dev
+          - prod
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: "zulu"
-          java-version: "17"
-
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: "3.47.7" # Aapka current version yahan daal dena
-          channel: "stable"
+      # ... (Checkout, Setup Java, Setup Flutter wale steps same rahenge) ...
 
       - name: Decode Keystore
         run: |
@@ -38,11 +34,16 @@ jobs:
       - name: Get Dependencies
         run: flutter pub get
 
+      # 🔥 MAGIC LINE: Yahan humne flavor pass kiya hai
       - name: Build Release AAB
-        run: flutter build appbundle --release
+        run: |
+          flutter build appbundle --release \
+            --flavor ${{ github.event.inputs.flavor }} \
+            -t lib/main_${{ github.event.inputs.flavor }}.dart
 
+      # 🔥 Artifact ka path bhi flavor ke hisaab se badal jayega
       - name: Upload AAB Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: release-aab
-          path: build/app/outputs/bundle/release/app-release.aab
+          name: release-aab-${{ github.event.inputs.flavor }}
+          path: build/app/outputs/bundle/${{ github.event.inputs.flavor }}Release/app-${{ github.event.inputs.flavor }}-release.aab

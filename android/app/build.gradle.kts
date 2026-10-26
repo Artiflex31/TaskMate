@@ -31,6 +31,20 @@ android {
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
+        // Flavors define karne ke liye
+    flavorDimensions += "environment"
+    
+    productFlavors {
+        create("dev") {
+            dimension = "environment"
+            applicationIdSuffix = ".dev" // 👈 Isse package name ke aage .dev lag jayega
+            resValue("string", "app_name", "TaskMate Dev")
+        }
+        create("prod") {
+            dimension = "environment"
+            resValue("string", "app_name", "TaskMate")
+        }
+    }
 
     // 2. Signing config (Kotlin DSL style)
     signingConfigs {
