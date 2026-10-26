@@ -18,14 +18,31 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      # ... (Checkout, Setup Java, Setup Flutter wale steps same rahenge) ...
+      # 🔥 1. Sabse pehle code checkout karna zaroori hai
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: "zulu"
+          java-version: "17"
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.47.7"
+          channel: "stable"
+
+      # 🔥 2. Keystore Decode karo (Folder create karne ki safety ke saath)
       - name: Decode Keystore
         run: |
+          mkdir -p android/app  # Safety: Agar folder na ho toh bana do
           echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/upload-keystore.jks
 
       - name: Create key.properties
         run: |
+          mkdir -p android
           echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" > android/key.properties
           echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
           echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
@@ -34,14 +51,12 @@ jobs:
       - name: Get Dependencies
         run: flutter pub get
 
-      # 🔥 MAGIC LINE: Yahan humne flavor pass kiya hai
       - name: Build Release AAB
         run: |
           flutter build appbundle --release \
             --flavor ${{ github.event.inputs.flavor }} \
             -t lib/main_${{ github.event.inputs.flavor }}.dart
 
-      # 🔥 Artifact ka path bhi flavor ke hisaab se badal jayega
       - name: Upload AAB Artifact
         uses: actions/upload-artifact@v4
         with:
