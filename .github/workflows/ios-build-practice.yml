@@ -1,0 +1,37 @@
+name: iOS Build Practice (No Signing)
+
+on:
+  workflow_dispatch: # Manual run karne ke liye
+
+jobs:
+  build-ios:
+    runs-on: macos-latest # 🔥 Cloud Mac
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.47.7" # Aapka version
+          channel: "stable"
+
+      - name: Get Dependencies
+        run: flutter pub get
+
+      - name: Build iOS (No Codesign)
+        run: flutter build ios --release --no-codesign
+        # 👆 --no-codesign lagane se Xcode sign karne ki koshish nahi karega
+
+      - name: Zip the build
+        run: |
+          cd build/ios/iphoneos
+          zip -r Runner.app.zip Runner.app
+          # Compile hui app ko zip kar rahe hain download ke liye
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-unsigned-app
+          path: build/ios/iphoneos/Runner.app.zip
