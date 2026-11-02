@@ -17,6 +17,10 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    env:
+      FLAVOR: ${{ github.event.inputs.flavor || 'dev' }}
+
     steps:
       # 🔥 1. Sabse pehle code checkout karna zaroori hai
       - name: Checkout Code
@@ -51,14 +55,14 @@ jobs:
       - name: Get Dependencies
         run: flutter pub get
 
-      - name: Build Release AAB
+            - name: Build Release AAB
         run: |
           flutter build appbundle --release \
-            --flavor ${{ github.event.inputs.flavor }} \
-            -t lib/main_${{ github.event.inputs.flavor }}.dart
+            --flavor ${{ env.FLAVOR }} \
+            -t lib/main_${{ env.FLAVOR }}.dart
 
       - name: Upload AAB Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: release-aab-${{ github.event.inputs.flavor }}
-          path: build/app/outputs/bundle/${{ github.event.inputs.flavor }}Release/app-${{ github.event.inputs.flavor }}-release.aab
+          name: release-aab-${{ env.FLAVOR }}
+          path: build/app/outputs/bundle/${{ env.FLAVOR }}Release/app-${{ env.FLAVOR }}-release.aab
