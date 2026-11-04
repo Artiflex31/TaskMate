@@ -35,13 +35,12 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.47.7"
-          channel: "stable"
+          channel: "stable" # Version hardcode nahi kiya taaki latest stable use ho
 
       # 🔥 2. Keystore Decode karo (Folder create karne ki safety ke saath)
       - name: Decode Keystore
         run: |
-          mkdir -p android/app  # Safety: Agar folder na ho toh bana do
+          mkdir -p android/app
           echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/upload-keystore.jks
 
       - name: Create key.properties
@@ -52,14 +51,14 @@ jobs:
           echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
           echo "storeFile=upload-keystore.jks" >> android/key.properties
 
-            - name: Get Dependencies
+      - name: Get Dependencies
         run: flutter pub get
 
       - name: Build Release AAB
         run: |
           flutter build appbundle --release \
-          --flavor ${{ env.FLAVOR }} \
-          -t lib/main_${{ env.FLAVOR }}.dart
+            --flavor ${{ env.FLAVOR }} \
+            -t lib/main_${{ env.FLAVOR }}.dart
 
       - name: Upload AAB Artifact
         uses: actions/upload-artifact@v4
