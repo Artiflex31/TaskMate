@@ -52,14 +52,14 @@ jobs:
           echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
           echo "storeFile=upload-keystore.jks" >> android/key.properties
 
-      - name: Get Dependencies
+            - name: Get Dependencies
         run: flutter pub get
 
-            - name: Build Release AAB
+      - name: Build Release AAB
         run: |
           flutter build appbundle --release \
-            --flavor ${{ env.FLAVOR }} \
-            -t lib/main_${{ env.FLAVOR }}.dart
+          --flavor ${{ env.FLAVOR }} \
+          -t lib/main_${{ env.FLAVOR }}.dart
 
       - name: Upload AAB Artifact
         uses: actions/upload-artifact@v4
